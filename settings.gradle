@@ -1,0 +1,3 @@
+rootProject.name = 'kakao'
+include 'kakao-domain'
+include 'kakao-interfaces'
