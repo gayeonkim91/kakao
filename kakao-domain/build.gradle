@@ -6,6 +6,19 @@ jar {
 }
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    runtime('com.h2database:h2')
+    compile('org.springframework.boot:spring-boot-starter-data-redis')
+
+    runtimeOnly('mysql:mysql-connector-java')
+    compile ('io.lettuce:lettuce-core:5.3.1.RELEASE')
+    compile('org.flywaydb:flyway-core')
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+apply plugin: "org.flywaydb.flyway"
+
+flyway {
+    url = 'jdbc:mysql://localhost:3306/kakao?characterEncoding=UTF-8&serverTimezone=UTC'
+    user = 'root'
+    password = '12345678'
 }
