@@ -1,5 +1,8 @@
 package com.kakao.interfaces.common.context;
 
+import com.kakao.interfaces.common.exception.BadRequestException;
+import org.springframework.util.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class ContextGenerator {
@@ -11,8 +14,12 @@ public class ContextGenerator {
 	}
 
 	public static ClientContext generateContext(HttpServletRequest request) {
-		Integer userId = request.getIntHeader(ContextGenerator.USER_ID_HEADER);
+		int userId = request.getIntHeader(ContextGenerator.USER_ID_HEADER);
 		String roomId = request.getHeader(ContextGenerator.ROOM_ID_HEADER);
+
+		if (userId <= 0 || StringUtils.isEmpty(roomId)) {
+			throw new BadRequestException("userId나 roomId가 없습니다.");
+		}
 
 		return ClientContext.builder()
 			.userId(userId)

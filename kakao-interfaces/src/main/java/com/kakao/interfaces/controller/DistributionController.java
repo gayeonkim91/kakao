@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 
 @RestController
@@ -23,7 +24,8 @@ public class DistributionController {
 	private final DistributionStatusService distributionStatusService;
 
 	@PostMapping(value = "/distribute")
-	public ResponseDTO<String> distribute(@RequestBody DistributionRequestDTO requestDTO) {
+	public ResponseDTO<String> distribute(@RequestBody @Valid DistributionRequestDTO requestDTO) {
+		requestDTO.validate();
 		ClientContext context = ClientContextHolder.get();
 		return ResponseDTO.ofSuccess(
 			distributionRequestService.distribution(requestDTO, context.getUserId(), context.getRoomId()));
@@ -35,8 +37,8 @@ public class DistributionController {
 		return ResponseDTO.ofSuccess(distributionReceiveService.receive(token, context.getUserId(), context.getRoomId()));
 	}
 
-	@GetMapping("/status")
-	public ResponseDTO<DistributionStatusDTO> getStatus(@RequestParam String token) {
+	@GetMapping("/status/{token}")
+	public ResponseDTO<DistributionStatusDTO> getStatus(@PathVariable String token) {
 		ClientContext context = ClientContextHolder.get();
 		return ResponseDTO.ofSuccess(distributionStatusService.getStatus(token, context.getUserId(), context.getRoomId()));
 	}

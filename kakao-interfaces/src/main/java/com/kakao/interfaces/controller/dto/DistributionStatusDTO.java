@@ -4,13 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 public class DistributionStatusDTO {
-	private LocalDateTime requestedDateTime;
+	private String requestedDateTime;
 	private BigDecimal requestedAmount;
 	private BigDecimal totalReceivedAmount;
 	private List<DistributionInfoDTO> distributionInfoList;

@@ -6,6 +6,8 @@ import com.kakao.domain.application.DistributionResultDomainService;
 import com.kakao.domain.application.vo.DistributionRequestSaveVO;
 import com.kakao.domain.application.vo.DistributionRequestVO;
 import com.kakao.domain.application.vo.DistributionResultSaveVO;
+import com.kakao.interfaces.common.exception.BadRequestException;
+import com.kakao.domain.common.RetrieveFailureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -50,17 +52,17 @@ public class DistributionReceiveService {
 
 	private void validateExpiredToken(String token, String roomId) {
 		if (!distributionRedisService.exists(token, roomId)) {
-			throw new IllegalArgumentException();
+			throw new RetrieveFailureException("생성된지 10분이 지나거나 이미 다 받은 뿌리기에서는 받을 수 없습니다.");
 		}
 	}
 
 	private void validateRequestVO(DistributionRequestVO distributionRequestVO, Integer userId) {
 		if (distributionRequestVO.getRequestedUserId().equals(userId)) {
-			throw new IllegalArgumentException();
+			throw new BadRequestException("뿌린 사람은 받을 수 없습니다.");
 		}
 		distributionRequestVO.getDistributionResultList().forEach(result -> {
 			if (result.getReceivedUserId().equals(userId)) {
-				throw new IllegalArgumentException();
+				throw new BadRequestException("이미 받은 사람은 받을 수 없습니다.");
 			}
 		});
 	}

@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DistributionRequestRepository extends JpaRepository<DistributionRequest, Long> {
-	DistributionRequest findDistinctByTokenAndRoomId(String token, String roomId);
+	DistributionRequest findTopByTokenAndRoomId(String token, String roomId);
 }
