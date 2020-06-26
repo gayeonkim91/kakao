@@ -1,11 +1,10 @@
 package com.kakao.interfaces.controller
 
+import com.kakao.configuration.HttpRequestHeaderInterceptor
 import com.kakao.domain.common.RetrieveFailureException
 import com.kakao.interfaces.application.DistributionReceiveService
 import com.kakao.interfaces.application.DistributionRequestService
 import com.kakao.interfaces.application.DistributionStatusService
-import com.kakao.interfaces.common.context.ClientContext
-import com.kakao.interfaces.common.context.ClientContextHolder
 import com.kakao.interfaces.common.exception.BadRequestException
 import com.kakao.interfaces.controller.dto.DistributionInfoDTO
 import com.kakao.interfaces.controller.dto.DistributionRequestDTO
@@ -32,9 +31,9 @@ class DistributionControllerTest extends Specification {
 	void setup() {
 		controller = new DistributionController(distributionRequestService, distributionReceiveService, distributionStatusService)
 		KakaoApiControllerAdvice controllerAdvice = new KakaoApiControllerAdvice()
-		controllerMock = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(controllerAdvice).build()
+		HttpRequestHeaderInterceptor headerInterceptor = new HttpRequestHeaderInterceptor()
+		controllerMock = MockMvcBuilders.standaloneSetup(controller).addInterceptors(headerInterceptor).setControllerAdvice(controllerAdvice).build()
 		jsonSlurper = new JsonSlurper()
-		ClientContextHolder.set(ClientContext.builder().roomId("abc").userId(123).build())
 	}
 
 	def "Distribute"() {
@@ -44,6 +43,8 @@ class DistributionControllerTest extends Specification {
 		when:
 		def response = controllerMock.perform(
 				MockMvcRequestBuilders.post("/distribute")
+						.header("X-ROOM-ID", "abc")
+						.header("X-USER-ID", 123)
 						.content("{\"price\":1000, \"memberCount\":3}")
 						.contentType(MediaType.APPLICATION_JSON)
 		)
@@ -66,6 +67,8 @@ class DistributionControllerTest extends Specification {
 		when:
 		def actions = controllerMock.perform(
 				MockMvcRequestBuilders.post("/distribute")
+						.header("X-ROOM-ID", "abc")
+						.header("X-USER-ID", 123)
 						.content("{\"price\":" + PRICE + ", \"memberCount\":" + MEMBER_COUNT + "}")
 						.contentType(MediaType.APPLICATION_JSON)
 		)
@@ -94,6 +97,8 @@ class DistributionControllerTest extends Specification {
 		when:
 		def response = controllerMock.perform(
 				MockMvcRequestBuilders.post("/receive/token")
+						.header("X-ROOM-ID", "abc")
+						.header("X-USER-ID", 123)
 		)
 
 		then:
@@ -113,6 +118,8 @@ class DistributionControllerTest extends Specification {
 		when:
 		def actions = controllerMock.perform(
 				MockMvcRequestBuilders.post("/receive/{token}", "token")
+						.header("X-ROOM-ID", "abc")
+						.header("X-USER-ID", 123)
 		)
 
 		then:
@@ -140,6 +147,8 @@ class DistributionControllerTest extends Specification {
 		when:
 		def response = controllerMock.perform(
 				MockMvcRequestBuilders.get("/status/{token}", "token")
+						.header("X-ROOM-ID", "abc")
+						.header("X-USER-ID", 123)
 		)
 
 		then:
@@ -164,6 +173,8 @@ class DistributionControllerTest extends Specification {
 		when:
 		def actions = controllerMock.perform(
 				MockMvcRequestBuilders.get("/status/{token}", "token")
+						.header("X-ROOM-ID", "abc")
+						.header("X-USER-ID", 123)
 		)
 
 		then:
@@ -173,6 +184,24 @@ class DistributionControllerTest extends Specification {
 		def result = jsonSlurper.parseText(response.getContentAsString())
 		!result.success
 		result.message == "failure"
+		result.content == null
+	}
+
+	def "Header에 값이 제대로 들어가 있지 않을 때"() {
+		distributionReceiveService.receive(_ as String, _ as Integer, _ as String) >> BigDecimal.TEN
+
+		when:
+		def actions = controllerMock.perform(
+				MockMvcRequestBuilders.post("/receive/token")
+		)
+
+		then:
+		actions.andExpect(MockMvcResultMatchers.status().isInternalServerError())
+		def response = actions.andReturn().getResponse()
+		response.setCharacterEncoding("UTF-8")
+		def result = jsonSlurper.parseText(response.getContentAsString())
+		!result.success
+		result.message == "userId나 roomId가 없습니다."
 		result.content == null
 	}
 }
