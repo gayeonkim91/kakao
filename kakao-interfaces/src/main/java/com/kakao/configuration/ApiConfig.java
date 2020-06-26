@@ -1,17 +1,25 @@
 package com.kakao.configuration;
 
 import com.kakao.interfaces.Api;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Slf4j
 @EnableWebMvc
 @ComponentScan(basePackageClasses = { Api.class })
-public class ApiConfig extends WebMvcConfigurationSupport {
+public class ApiConfig implements WebMvcConfigurer {
 
 	@Override
-	protected void addInterceptors(InterceptorRegistry registry) {
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(httpRequestHeaderInterceptor());
+	}
 
+	@Bean
+	public HttpRequestHeaderInterceptor httpRequestHeaderInterceptor() {
+		return new HttpRequestHeaderInterceptor();
 	}
 }

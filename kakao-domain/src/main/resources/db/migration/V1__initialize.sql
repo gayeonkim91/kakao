@@ -7,11 +7,10 @@ CREATE TABLE distribution_requests (
     token VARCHAR(3) NOT NULL,
     amount decimal(12,2) NOT NULL,
     memberCount INT NOT NULL,
-    status VARCHAR(20) NOT NULL,
     createdAt datetime NOT NULL,
     PRIMARY KEY (distributionRequestId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-CREATE INDEX distribution_request_idx01 ON distribution_requests (roomId, token, status);
+CREATE INDEX distribution_request_idx01 ON distribution_requests (roomId, token);
 
 DROP TABLE IF EXISTS distribution_results;
 
