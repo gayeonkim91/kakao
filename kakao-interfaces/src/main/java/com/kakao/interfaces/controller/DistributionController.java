@@ -9,7 +9,6 @@ import com.kakao.interfaces.common.context.ClientContextHolder;
 import com.kakao.interfaces.controller.dto.DistributionRequestDTO;
 import com.kakao.interfaces.controller.dto.DistributionStatusDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,7 +16,6 @@ import java.math.BigDecimal;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class DistributionController {
 	private final DistributionRequestService distributionRequestService;
 	private final DistributionReceiveService distributionReceiveService;

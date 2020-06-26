@@ -45,7 +45,8 @@ public class DistributionRequestService {
 			return result;
 		}
 		for (int i = 0; i < memberCount - 1; i++) {
-			BigDecimal amount = BigDecimal.valueOf(random.nextInt(totalAmount.intValue() - memberCount - i) + 1);
+			int bound = totalAmount.intValue() - (memberCount - i -1);
+			BigDecimal amount = BigDecimal.valueOf(random.nextInt(bound) + 1);
 			result[i] = amount;
 			totalAmount = totalAmount.subtract(amount);
 		}

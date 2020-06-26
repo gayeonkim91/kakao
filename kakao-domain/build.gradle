@@ -1,24 +1,25 @@
-bootJar {
-    enabled = false
-}
-jar {
-    enabled = true
-}
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-data-redis')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-data-redis')
 
-    runtimeOnly('mysql:mysql-connector-java')
-    compile ('io.lettuce:lettuce-core:5.3.1.RELEASE')
-    compile('org.flywaydb:flyway-core')
+	runtimeOnly('mysql:mysql-connector-java')
+	compile('io.lettuce:lettuce-core:5.3.1.RELEASE')
+	compile('org.flywaydb:flyway-core')
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 apply plugin: "org.flywaydb.flyway"
 
 flyway {
-    url = 'jdbc:mysql://localhost:3306/kakao?characterEncoding=UTF-8&serverTimezone=UTC'
-    user = 'root'
-    password = '12345678'
+	url = 'jdbc:mysql://localhost:3306/kakao?characterEncoding=UTF-8&serverTimezone=UTC'
+	user = 'root'
+	password = '12345678'
+}
+
+bootJar {
+	enabled = false
+}
+jar {
+	enabled = true
 }
